@@ -1,6 +1,10 @@
 import { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function Signup() {
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -9,6 +13,9 @@ function Signup() {
     role: "customer",
   });
 
+  const [message, setMessage] = useState("");
+  const [isError, setIsError] = useState(false);
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -16,21 +23,65 @@ function Signup() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Clear old message
+    setMessage("");
+
+    // Password validation
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match!");
+      setIsError(true);
+      setMessage("Passwords do not match!");
       return;
     }
 
-    console.log("User Data:", formData);
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/auth/signup",
+        {
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+          role: formData.role,
+        }
+      );
+
+      setIsError(false);
+      setMessage(response.data.message || "Account created successfully!");
+
+      // Clear form
+      setFormData({
+        name: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+        role: "customer",
+      });
+
+      // Redirect to login page after 2 seconds
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000);
+
+    } catch (error) {
+      setIsError(true);
+      setMessage(
+        error.response?.data?.message || "Signup failed"
+      );
+    }
   };
 
   return (
     <div className="signup-container">
       <div className="signup-box">
         <h2>Sign Up</h2>
+
+        {message && (
+          <div className={isError ? "error-message" : "success-message"}>
+            {message}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit}>
           <input
@@ -78,7 +129,9 @@ function Signup() {
             required
           />
 
-          <button type="submit">Create Account</button>
+          <button type="submit">
+            Create Account
+          </button>
         </form>
       </div>
     </div>

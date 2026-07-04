@@ -467,3 +467,63 @@ html{
   color: white;
   cursor: pointer;
 }
+
+/* ================= Logged In Navbar ================= */
+
+.welcome-user {
+  display: flex;
+  align-items: center;
+  padding: 10px 18px;
+  background: rgba(255,255,255,0.18);
+  color: white;
+  border-radius: 30px;
+  font-weight: 600;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.25);
+  transition: 0.3s ease;
+}
+
+.welcome-user:hover {
+  background: rgba(255,255,255,0.25);
+}
+
+.logout-btn {
+  background: white;
+  color: #166534;
+  border: none;
+  padding: 11px 22px;
+  border-radius: 30px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+  background: #dcfce7;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+.logout-btn:active {
+  transform: translateY(0);
+}
+
+/* Better alignment for navbar items */
+.nav-links li {
+  display: flex;
+  align-items: center;
+}
+
+/* Responsive navbar for logged in user */
+@media(max-width:768px) {
+  .welcome-user {
+    font-size: 0.9rem;
+    padding: 8px 14px;
+  }
+
+  .logout-btn {
+    padding: 10px 18px;
+    width: 100%;
+  }
+}

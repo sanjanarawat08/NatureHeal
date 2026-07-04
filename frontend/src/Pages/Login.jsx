@@ -1,6 +1,10 @@
 import { useState } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
+  const navigate = useNavigate();
+
   const [loginData, setLoginData] = useState({
     email: "",
     password: "",
@@ -8,6 +12,8 @@ function Login() {
   });
 
   const [showPassword, setShowPassword] = useState(false);
+  const [message, setMessage] = useState("");
+  const [isError, setIsError] = useState(false);
 
   const handleChange = (e) => {
     setLoginData({
@@ -16,19 +22,53 @@ function Login() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log("Login Data:", loginData);
+    setMessage("");
 
-    // Later you can send this to backend
-    // axios.post("/api/login", loginData);
+    try {
+      const response = await axios.post(
+        "http://localhost:5000/api/auth/login",
+        loginData
+      );
+
+      setIsError(false);
+      setMessage("Login successful! Redirecting...");
+
+      // Store user data
+      localStorage.setItem(
+        "user",
+        JSON.stringify(response.data.user)
+      );
+
+      // Redirect to home page after 1 second
+      setTimeout(() => {
+        navigate("/");
+      }, 1000);
+
+    } catch (error) {
+      setIsError(true);
+      setMessage(
+        error.response?.data?.message || "Login failed"
+      );
+    }
   };
 
   return (
     <div className="login-container">
       <div className="login-box">
         <h2>Login</h2>
+
+        {message && (
+          <div
+            className={
+              isError ? "error-message" : "success-message"
+            }
+          >
+            {message}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit}>
           <input
@@ -61,8 +101,10 @@ function Login() {
 
             <button
               type="button"
-              onClick={() => setShowPassword(!showPassword)}
               className="show-password-btn"
+              onClick={() =>
+                setShowPassword(!showPassword)
+              }
             >
               {showPassword ? "Hide" : "Show"}
             </button>
